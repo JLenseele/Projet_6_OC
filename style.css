@@ -1,0 +1,26 @@
+body {
+  background-color: #111;
+  color: #EEE;
+  font-family: 'Roboto Slab', serif;
+}
+
+#the-movie{
+  width: auto;
+  height: 600px;
+  background: lightskyblue;
+  border: 1px solid black; 
+}
+
+.bestmovies{
+	display: flex;
+  height: 200px;
+
+}
+
+.carousel{
+  width: auto;
+  height: auto;
+  background: hotpink;
+  float: left;
+  margin: 3px;
+}
