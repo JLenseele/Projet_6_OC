@@ -11,6 +11,74 @@ const imageTopMovie = document.getElementById('img-top-movie');
 
 let tabFilmExploit = [];
 
+
+
+class Carousel {
+
+	/**
+	 * @param element HTML
+	 * @param Object options
+	 * @param slidesToScroll Nombre d'element à faire défiler
+	 * @param slidesVisible Nombre d'element visible dans le carousel
+	 */
+
+	constructor (element, options = {}) {
+		this.element = element
+		this.options = options
+		let ratio = this.options.slidesTotal / this.options.slidesVisible
+		this.carousel = element.children[1]
+		this.carousel.style.cssText = 'width:'+(ratio * 100)+'%';
+		this.currentItem = 0;
+		
+		
+		
+		let sizeMovie = ((100  / this.options.slidesVisible) / ratio)
+		for (let i = 0; i < element.children[1].children.length; i++) {
+			element.children[1].children[i].style.cssText = 'width:'+sizeMovie+'%'
+		}
+
+		this.navigation()
+	}
+
+	navigation(){
+	let nextBtn = document.createElement('div')
+	nextBtn.setAttribute('class', 'btn_next')
+	this.element.appendChild(nextBtn)
+	nextBtn.addEventListener("click", this.next.bind(this));
+
+	let prevBtn = document.createElement('div')
+	prevBtn.setAttribute('class', 'btn_prev')
+	this.element.appendChild(prevBtn)
+	prevBtn.addEventListener("click",this.prev.bind(this));
+	}
+
+	next(){
+		this.goToItem(this.currentItem + this.options.slidesToScroll)
+
+	}
+	prev(){
+		this.goToItem(this.currentItem - this.options.slidesToScroll)
+	}
+	goToItem(index){
+		if (index < 0){
+			index = this.options.slidesTotal - this.options.slidesVisible
+		}
+		if (index > this.options.slidesVisible){
+			index = 0
+		}
+		let ratioX = index * -100 / this.options.slidesTotal
+		this.carousel.style.transform = 'translate3d(' + ratioX + '%, 0, 0)'
+		this.currentItem = index
+	}
+}
+
+
+function getResolution() {
+    let resolution = window.screen.width * window.devicePixelRatio
+    
+    return resolution
+}
+
 async function fetchMovies(url) {
   
   	try{
@@ -22,8 +90,6 @@ async function fetchMovies(url) {
   		console.log(err);
   };
 }
-
-const sectionBestMovie = document.getElementById('bestmovies');
 
 async function start(url){
 
@@ -40,7 +106,7 @@ async function start(url){
     return moviesList;
 }
 
-async function createCarousel(section, url){
+async function createMovies(section, url){
 	
 	items = await start(url);
 	for(let item of items){
@@ -48,6 +114,7 @@ async function createCarousel(section, url){
 	}
 
 	let sectionCarousel = document.querySelector("#" + section + " div.carousel");
+	let container =  document.querySelector("#" + section)
 
 	for(let i = 0; i < items.length; i++){
 		let movie = document.createElement("div")
@@ -61,15 +128,31 @@ async function createCarousel(section, url){
 		sectionCarousel.appendChild(movie);
 
 		movie.setAttribute('onclick', "showModale(" + items[i].id + ")");
-	}				
+
+		let close = document.getElementById("close")
+		close.setAttribute('onclick', "showModale(" + items[i].id + ")");
+
+	}
+	resolution = getResolution()
+	if (resolution <= 1024) {
+        slidesVisibles = 1
+    } else {
+        slidesVisibles = 4
+    }
+
+	new Carousel(document.querySelector("#"+section), {
+		slidesToScroll: 1,
+		slidesVisible: slidesVisibles,
+		slidesTotal: 7
+		})				
 }
 
 // function link to modale call
 function showModale(films) {
 
-	element = document.getElementById("modale");
-	console.log(films);
 	
+
+	let imgInfo = document.getElementById("img_infos")
 	let titleInfo = document.getElementById("title_infos")
 	let genderInfo = document.getElementById("gender_infos")
 	let yearInfo = document.getElementById("year_infos")
@@ -82,24 +165,29 @@ function showModale(films) {
 	let boxofficeInfo = document.getElementById("boxoffice_infos")
 	let synopsisInfo = document.getElementById("synopsis_infos")
 
-	console.log(tabFilmExploit);
 	for(i = 0; i < tabFilmExploit.length; i++){
 
 		if(films == tabFilmExploit[i].id){
 
-			titleInfo.innerText = "Titre : " + tabFilmExploit[i].title;
-			genderInfo.innerText = "Catégorie : " + tabFilmExploit[i].genres.join('/');
-			yearInfo.innerText = "Date de sorie : " + tabFilmExploit[i].year;
-			ratedInfo.innerText = "Note : " + tabFilmExploit[i].rated;
-			imdbInfo.innerText = "IMDB : " + tabFilmExploit[i].imdb_score;
-			realInfo.innerText = "Réalisateur : " + tabFilmExploit[i].directors.join('/');
-			actorsInfo.innerText = "Acteur(s) : " + tabFilmExploit[i].actors.join('/');
-			durationInfo.innerText = "Durée : " + tabFilmExploit[i].duration;
-			countryInfo.innerText = "Pays : " + tabFilmExploit[i].countries;
-			boxofficeInfo.innerText = "Résultat au box office : " + tabFilmExploit[i].worldwide_gross_income + " $ ";
-			synopsisInfo.innerText = "Synopsis : " + tabFilmExploit[i].long_description;
+			imgInfo.src = tabFilmExploit[i].image_url;
+			titleInfo.innerHTML = "<span>Titre : </span>" + tabFilmExploit[i].title;
+			genderInfo.innerHTML = "<span>Catégorie : </span>" + tabFilmExploit[i].genres.join(' / ');
+			yearInfo.innerHTML = "<span>Date de sorie : </span> " + tabFilmExploit[i].year;
+			ratedInfo.innerHTML = "<span>Note : </span>" + tabFilmExploit[i].rated;
+			imdbInfo.innerHTML = "<span>IMDB : </span>" + tabFilmExploit[i].imdb_score;
+			realInfo.innerHTML = "<span>Réalisateur : </span>" + tabFilmExploit[i].directors.join(' / ');
+			actorsInfo.innerHTML = "<span>Acteur(s) : </span>" + tabFilmExploit[i].actors.join(' / ');
+			durationInfo.innerHTML = "<span>Durée : </span>" + tabFilmExploit[i].duration;
+			countryInfo.innerHTML = "<span>Pays : </span>" + tabFilmExploit[i].countries;
+			boxofficeInfo.innerHTML = "<span>Résultat au box office : </span>" + tabFilmExploit[i].worldwide_gross_income + " $ ";
+			synopsisInfo.innerHTML = "<span>Synopsis : </span>" + tabFilmExploit[i].long_description;
 		}
 	}
+	show()
+}
+
+function show(){
+	element = document.getElementById("modale");
 	element.style.visibility = (element.style.visibility == "visible") ? "hidden" : "visible";
 }
 
@@ -129,13 +217,15 @@ async function createTopMovie(section, url) {
 	element.appendChild(imgTop)
 	element.appendChild(descTop)
 	element.appendChild(buttonTop)
+
+	buttonTop.setAttribute('onclick', "showModale(" + movie[0].id + ")");
 }
 
 
 // @arg1 = <section> id name
 // @arg2 = URL const (top of this file)
 createTopMovie('the-movie', urlTheMovie);
-createCarousel('best-movies', ulrBestMovies);
-createCarousel('best-adventure', urlAdventure);
-createCarousel('best-comedy', urlComedy);
-createCarousel('best-history', urlHistory);
+createMovies('best-movies', ulrBestMovies);
+createMovies('best-adventure', urlAdventure);
+createMovies('best-comedy', urlComedy);
+createMovies('best-history', urlHistory);
