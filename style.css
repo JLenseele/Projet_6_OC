@@ -178,6 +178,11 @@ section h2{
   text-align: center;
   border-radius: 40%;
 }
+#close:hover{
+  color: red;
+
+}
+
 span{
   font-weight: bold;
   color: black;
