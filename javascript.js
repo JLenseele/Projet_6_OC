@@ -12,7 +12,6 @@ const imageTopMovie = document.getElementById('img-top-movie');
 let tabFilmExploit = [];
 
 
-
 class Carousel {
 
 	/**
@@ -63,7 +62,7 @@ class Carousel {
 		if (index < 0){
 			index = this.options.slidesTotal - this.options.slidesVisible
 		}
-		if (index > this.options.slidesVisible){
+		if (index > (this.options.slidesTotal - this.options.slidesVisible)){
 			index = 0
 		}
 		let ratioX = index * -100 / this.options.slidesTotal
@@ -72,12 +71,6 @@ class Carousel {
 	}
 }
 
-
-function getResolution() {
-    let resolution = window.screen.width * window.devicePixelRatio
-    
-    return resolution
-}
 
 async function fetchMovies(url) {
   
@@ -133,8 +126,8 @@ async function createMovies(section, url){
 		close.setAttribute('onclick', "showModale(" + items[i].id + ")");
 
 	}
-	resolution = getResolution()
-	if (resolution <= 1024) {
+
+	if (resWidth <= 360) {
         slidesVisibles = 1
     } else {
         slidesVisibles = 4
@@ -149,8 +142,6 @@ async function createMovies(section, url){
 
 // function link to modale call
 function showModale(films) {
-
-	
 
 	let imgInfo = document.getElementById("img_infos")
 	let titleInfo = document.getElementById("title_infos")
@@ -177,9 +168,9 @@ function showModale(films) {
 			imdbInfo.innerHTML = "<span>IMDB : </span>" + tabFilmExploit[i].imdb_score;
 			realInfo.innerHTML = "<span>Réalisateur : </span>" + tabFilmExploit[i].directors.join(' / ');
 			actorsInfo.innerHTML = "<span>Acteur(s) : </span>" + tabFilmExploit[i].actors.join(' / ');
-			durationInfo.innerHTML = "<span>Durée : </span>" + tabFilmExploit[i].duration;
+			durationInfo.innerHTML = "<span>Durée : </span>" + tabFilmExploit[i].duration + "min";
 			countryInfo.innerHTML = "<span>Pays : </span>" + tabFilmExploit[i].countries;
-			boxofficeInfo.innerHTML = "<span>Résultat au box office : </span>" + tabFilmExploit[i].worldwide_gross_income + " $ ";
+			boxofficeInfo.innerHTML = (tabFilmExploit[i].worldwide_gross_income == null) ? "<span>Résultat au box office : </span> Non disponible" : "<span>Résultat au box office : </span> " + tabFilmExploit[i].worldwide_gross_income + " $ ";
 			synopsisInfo.innerHTML = "<span>Synopsis : </span>" + tabFilmExploit[i].long_description;
 		}
 	}
@@ -211,7 +202,6 @@ async function createTopMovie(section, url) {
 	// creation boutton d'information du top movie
 	buttonTop = document.createElement("button")
 	buttonTop.innerText = 'En savoir plus';
-	
 
 	element.appendChild(titleTop)
 	element.appendChild(imgTop)
@@ -221,7 +211,8 @@ async function createTopMovie(section, url) {
 	buttonTop.setAttribute('onclick', "showModale(" + movie[0].id + ")");
 }
 
-
+let resWidth = window.screen.availWidth;
+let resHeight = window.screen.availHeight;
 // @arg1 = <section> id name
 // @arg2 = URL const (top of this file)
 createTopMovie('the-movie', urlTheMovie);
