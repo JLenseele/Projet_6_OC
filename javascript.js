@@ -14,13 +14,7 @@ let tabFilmExploit = [];
 
 class Carousel {
 
-	/**
-	 * @param element HTML
-	 * @param Object options
-	 * @param slidesToScroll Nombre d'element à faire défiler
-	 * @param slidesVisible Nombre d'element visible dans le carousel
-	 */
-
+	// constructeur de caroussel
 	constructor (element, options = {}) {
 		this.element = element
 		this.options = options
@@ -28,7 +22,6 @@ class Carousel {
 		this.carousel = element.children[1]
 		this.carousel.style.cssText = 'width:'+(ratio * 100)+'%';
 		this.currentItem = 0;
-		
 		
 		
 		let sizeMovie = ((100  / this.options.slidesVisible) / ratio)
@@ -39,6 +32,7 @@ class Carousel {
 		this.navigation()
 	}
 
+	// Création des items boutons de navigation avant et après chaque carroussel
 	navigation(){
 	let nextBtn = document.createElement('div')
 	nextBtn.setAttribute('class', 'btn_next')
@@ -50,7 +44,7 @@ class Carousel {
 	this.element.appendChild(prevBtn)
 	prevBtn.addEventListener("click",this.prev.bind(this));
 	}
-
+	
 	next(){
 		this.goToItem(this.currentItem + this.options.slidesToScroll)
 
